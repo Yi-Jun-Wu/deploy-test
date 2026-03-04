@@ -1,0 +1,14 @@
+name: 'Deploy GitHub Pages site'
+description: 'A GitHub Action to deploy an artifact as a GitHub Pages site'
+author: 'GitHub'
+runs:
+  using: 'node24'
+  main: 'index.ts'
+inputs:
+  token:
+    description: 'GitHub token'
+    default: ${{ github.token }}
+    required: true
+  artifact-id:
+    description: 'The ID of the artifact that was uploaded'
+    required: true
