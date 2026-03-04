@@ -9,13 +9,14 @@ const idToken = await getIDToken();
 
 const octokit = getOctokit(githubToken);
 
-
 const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
   owner: context.repo.owner,
   repo: context.repo.repo,
   artifact_id: artifactId,
   pages_build_version: buildVersion,
   oidc_token: idToken,
-})
+});
 
 console.log(inspect(response, { colors: true, depth: Infinity }));
+
+// build command: npx esbuild .\.github\actions\deploy\index.ts --bundle --format=esm --platform=node --outfile=.\.github\actions\deploy\dist\index.js --minify --tree-shaking=true
