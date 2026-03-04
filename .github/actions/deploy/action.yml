@@ -9,6 +9,11 @@ inputs:
     description: 'GitHub token'
     default: ${{ github.token }}
     required: true
-  # artifact-id:
-  #   description: 'The ID of the artifact that was uploaded'
-  #   required: true
+  path:
+    description: 'Path of the directory containing the static assets.'
+    required: true
+    default: "dist/"
+  expire:
+    description: 'Duration after which artifact will be deleted in seconds.'
+    required: true
+    default: 0.5

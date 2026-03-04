@@ -1,27 +1,37 @@
 import { getInput, getIDToken } from '@actions/core';
 import { getOctokit, context } from "@actions/github";
 import { DefaultArtifactClient } from '@actions/artifact'
+import { exec } from 'node:child_process';
 
 const githubToken = getInput('token');
-// const artifactId = parseInt(getInput('artifact-id'));
+const filePath = getInput('path');
+let expireTime = parseFloat(getInput('expire'));
+if(expireTime < 0 || isNaN(expireTime) || !isFinite(expireTime)) expireTime = 0.5;
+
 const buildVersion = process.env.GITHUB_SHA!;
 const idToken = await getIDToken();
-
 const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(36).slice(2, 10)).join("-");
-
 const artifact = new DefaultArtifactClient();
-
 const octokit = getOctokit(githubToken);
+
+const runner_temp = process.env.RUNNER_TEMP ?? ".";
+exec(`tar \
+        --dereference --hard-dereference \
+        --directory "${filePath}" \
+        -cvf "$RUNNER_TEMP/artifact.tar" \
+        --exclude=.git \
+        --exclude=.github \
+        --exclude=".[^/]*" \
+        .`);
 
 const { id: artifactId } = await artifact.uploadArtifact(
   artifactName,
-  ['_site/artifact.tar'],
-  "./_site",
+  [`${runner_temp}/artifact.tar`],
+  runner_temp,
   { retentionDays: 1 }
 );
 // console.log(`Created artifact with id: ${artifactId} (bytes: ${size})`);
 const startTime = performance.now();
-
 
 const deployPage = async () => {
   const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
@@ -36,7 +46,7 @@ const deployPage = async () => {
 
 const deleteArtifact = async () => {
   // sleep 100 ms
-  await new Promise((resolve) => setTimeout(() => resolve(0), 100));
+  await new Promise((resolve) => setTimeout(() => resolve(0), 500));
   const { id } = await artifact.deleteArtifact(artifactName);
   const finishTime = performance.now();
   console.log("Deleted Artifact ID:", id);

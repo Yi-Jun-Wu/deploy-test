@@ -30,15 +30,15 @@ jobs:
           echo "window.onload = () => { const p = document.createElement('p'); p.append('JS is running'); document.body.appendChild(p); }" > index.js
           cd ..
           
-          mkdir _site
-          tar \
-            --dereference --hard-dereference \
-            --directory "dist" \
-            -cvf "_site/artifact.tar" \
-            --exclude=.git \
-            --exclude=.github \
-            --exclude=".[^/]*" \
-            .
+          # mkdir _site
+          # tar \
+          #   --dereference --hard-dereference \
+          #   --directory "dist" \
+          #   -cvf "_site/artifact.tar" \
+          #   --exclude=.git \
+          #   --exclude=.github \
+          #   --exclude=".[^/]*" \
+          #   .
 
       # - name: Upload artifact
       #   id: pages
