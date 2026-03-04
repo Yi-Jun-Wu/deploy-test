@@ -14,7 +14,7 @@ const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(36).s
 const artifact = new DefaultArtifactClient();
 const { id: artifactId, size } = await artifact.uploadArtifact(
   artifactName,
-  ['index.ts', 'index.js'],
+  ['index.html', 'index.js'],
   "./dist",
   { retentionDays: 1 }
 );
