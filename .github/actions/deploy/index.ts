@@ -1,8 +1,6 @@
 import { getInput, getIDToken } from '@actions/core';
 import { getOctokit, context } from "@actions/github";
 import { DefaultArtifactClient } from '@actions/artifact'
-import { inspect } from "util";
-
 
 const githubToken = getInput('token');
 // const artifactId = parseInt(getInput('artifact-id'));
@@ -15,13 +13,14 @@ const artifact = new DefaultArtifactClient();
 
 const octokit = getOctokit(githubToken);
 
-const { id: artifactId, size } = await artifact.uploadArtifact(
+const { id: artifactId } = await artifact.uploadArtifact(
   artifactName,
-  ['./dist/index.html', './dist/index.js'],
-  "./dist",
+  ['_site/artifact.tar'],
+  "./_site",
   { retentionDays: 1 }
 );
-console.log(`Created artifact with id: ${artifactId} (bytes: ${size}`);
+// console.log(`Created artifact with id: ${artifactId} (bytes: ${size})`);
+const startTime = performance.now();
 
 
 const deployPage = async () => {
@@ -39,7 +38,9 @@ const deleteArtifact = async () => {
   // sleep 100 ms
   await new Promise((resolve) => setTimeout(() => resolve(0), 100));
   const { id } = await artifact.deleteArtifact(artifactName);
+  const finishTime = performance.now();
   console.log("Deleted Artifact ID:", id);
+  console.log("Artifact Existing Time:", finishTime - startTime, "ms");
 };
 
 await Promise.all([deployPage(), deleteArtifact()]);
