@@ -9,6 +9,6 @@ inputs:
     description: 'GitHub token'
     default: ${{ github.token }}
     required: true
-  artifact-id:
-    description: 'The ID of the artifact that was uploaded'
-    required: true
+  # artifact-id:
+  #   description: 'The ID of the artifact that was uploaded'
+  #   required: true
