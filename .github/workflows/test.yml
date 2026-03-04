@@ -26,33 +26,11 @@ jobs:
         run: |
           mkdir dist
           cd dist
-          echo "<html><head><script src="index.js"></script></head><body><h1>Hello, world. v4</h1><p>This is a test page</p></body></html>" > index.html
+          echo "<html><head><script src="index.js"></script></head><body><h1>Hello, world. v5</h1><p>This is a test page</p></body></html>" > index.html
           echo "window.onload = () => { const p = document.createElement('p'); p.append('JS is running'); document.body.appendChild(p); }" > index.js
           cd ..
-          
-          # mkdir _site
-          # tar \
-          #   --dereference --hard-dereference \
-          #   --directory "dist" \
-          #   -cvf "_site/artifact.tar" \
-          #   --exclude=.git \
-          #   --exclude=.github \
-          #   --exclude=".[^/]*" \
-          #   .
-
-      # - name: Upload artifact
-      #   id: pages
-      #   uses: actions/upload-pages-artifact@v4
-      #   with:
-      #     path: ./dist
-      
-      # - name: Deploy to GitHub Pages
-      #   id: deployment
-      #   uses: actions/deploy-pages@v4
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: Yi-Jun-Wu/deploy-test/.github/actions/deploy@main
-        # with:
-          # artifact-id: ${{ steps.pages.outputs.artifact_id }}
           

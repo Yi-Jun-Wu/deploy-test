@@ -2,6 +2,7 @@ import { getInput, getIDToken } from '@actions/core';
 import { getOctokit, context } from "@actions/github";
 import { DefaultArtifactClient } from '@actions/artifact'
 import { execSync } from 'node:child_process';
+import { platform } from 'node:os';
 
 const githubToken = getInput('token');
 const filePath = getInput('path');
@@ -13,18 +14,48 @@ const idToken = await getIDToken();
 const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(36).slice(2, 10)).join("-");
 const artifact = new DefaultArtifactClient();
 const octokit = getOctokit(githubToken);
-
 const runner_temp = process.env.RUNNER_TEMP ?? ".";
-execSync(
-  `tar \
-    --dereference --hard-dereference \
-    --directory "${filePath}" \
-    -cvf "$RUNNER_TEMP/artifact.tar" \
-    --exclude=.git \
-    --exclude=.github \
-    --exclude=".[^/]*" \
-    .`
-);
+switch (platform()) {
+  case 'win32': // windows
+    execSync(
+      `tar \
+        --dereference --hard-dereference \
+        --directory "${filePath}" \
+        -cvf "$RUNNER_TEMP\artifact.tar" \
+        --exclude=.git \
+        --exclude=.github \
+        --exclude=".[^/]*" \
+        --force-local \
+        "."`
+    );
+    break;
+  case 'darwin': // macos
+    execSync(
+      `gtar \
+        --dereference --hard-dereference \
+        --directory "${filePath}" \
+        -cvf "$RUNNER_TEMP/artifact.tar" \
+        --exclude=.git \
+        --exclude=.github \
+        --exclude=".[^/]*" \
+        .`
+    );
+    break;
+  case 'linux': // linux
+  default:
+    execSync(
+      `tar \
+        --dereference --hard-dereference \
+        --directory "${filePath}" \
+        -cvf "$RUNNER_TEMP/artifact.tar" \
+        --exclude=.git \
+        --exclude=.github \
+        --exclude=".[^/]*" \
+        .`
+    );
+    break;
+}
+
 
 const { id: artifactId } = await artifact.uploadArtifact(
   artifactName,
