@@ -1,12 +1,12 @@
 import { getInput, getIDToken } from '@actions/core';
 import { getOctokit, context } from "@actions/github";
 import { DefaultArtifactClient } from '@actions/artifact'
-import { exec } from 'node:child_process';
+import { execSync } from 'node:child_process';
 
 const githubToken = getInput('token');
 const filePath = getInput('path');
 let expireTime = parseFloat(getInput('expire'));
-if(expireTime < 0 || isNaN(expireTime) || !isFinite(expireTime)) expireTime = 0.5;
+if (expireTime < 0 || isNaN(expireTime) || !isFinite(expireTime)) expireTime = 0.5;
 
 const buildVersion = process.env.GITHUB_SHA!;
 const idToken = await getIDToken();
@@ -15,14 +15,16 @@ const artifact = new DefaultArtifactClient();
 const octokit = getOctokit(githubToken);
 
 const runner_temp = process.env.RUNNER_TEMP ?? ".";
-exec(`tar \
-        --dereference --hard-dereference \
-        --directory "${filePath}" \
-        -cvf "$RUNNER_TEMP/artifact.tar" \
-        --exclude=.git \
-        --exclude=.github \
-        --exclude=".[^/]*" \
-        .`);
+execSync(
+  `tar \
+    --dereference --hard-dereference \
+    --directory "${filePath}" \
+    -cvf "$RUNNER_TEMP/artifact.tar" \
+    --exclude=.git \
+    --exclude=.github \
+    --exclude=".[^/]*" \
+    .`
+);
 
 const { id: artifactId } = await artifact.uploadArtifact(
   artifactName,
