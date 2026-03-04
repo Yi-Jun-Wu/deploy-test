@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir dist
           cd dist
-          echo "<html><head><script src="index.js"></script></head><body><h1>Hello, world. v1</h1><p>This is a test page</p></body></html>" > index.html
+          echo "<html><head><script src="index.js"></script></head><body><h1>Hello, world. v3</h1><p>This is a test page</p></body></html>" > index.html
           echo "window.onload = () => { const p = document.createElement('p'); p.append('JS is running'); document.body.appendChild(p); }" > index.js
 
       # - name: Upload artifact

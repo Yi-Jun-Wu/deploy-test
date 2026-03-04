@@ -12,6 +12,9 @@ const idToken = await getIDToken();
 const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(36).slice(2, 10)).join("-");
 
 const artifact = new DefaultArtifactClient();
+
+const octokit = getOctokit(githubToken);
+
 const { id: artifactId, size } = await artifact.uploadArtifact(
   artifactName,
   ['./dist/index.html', './dist/index.js'],
@@ -21,21 +24,25 @@ const { id: artifactId, size } = await artifact.uploadArtifact(
 console.log(`Created artifact with id: ${artifactId} (bytes: ${size}`);
 
 
-const octokit = getOctokit(githubToken);
+const deployPage = async () => {
+  const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    artifact_id: artifactId,
+    pages_build_version: buildVersion,
+    oidc_token: idToken,
+  });
+  console.log("Page deployed to:", response.data?.page_url ?? response);
+};
 
-const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
-  owner: context.repo.owner,
-  repo: context.repo.repo,
-  artifact_id: artifactId,
-  pages_build_version: buildVersion,
-  oidc_token: idToken,
-});
+const deleteArtifact = async () => {
+  // sleep 100 ms
+  await new Promise((resolve) => setTimeout(() => resolve(0), 100));
+  const { id } = await artifact.deleteArtifact(artifactName);
+  console.log("Deleted Artifact ID:", id);
+};
 
-console.log(inspect(response, { colors: true, depth: Infinity }));
-
-const { id } = await artifact.deleteArtifact(artifactName);
-
-console.log(`Deleted Artifact ID '${id}'`)
+await Promise.all([deployPage, deleteArtifact]);
 
 /* build command: 
 
