@@ -42,7 +42,7 @@ const deleteArtifact = async () => {
   console.log("Deleted Artifact ID:", id);
 };
 
-await Promise.all([deployPage, deleteArtifact]);
+await Promise.all([deployPage(), deleteArtifact()]);
 
 /* build command: 
 
