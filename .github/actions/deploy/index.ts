@@ -9,7 +9,7 @@ const githubToken = getInput('token');
 const buildVersion = process.env.GITHUB_SHA!;
 const idToken = await getIDToken();
 
-const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(62).slice(2, 10)).join("-");
+const artifactName = Array.from({ length: 3 }, _ => Math.random().toString(36).slice(2, 10)).join("-");
 
 const artifact = new DefaultArtifactClient();
 const { id: artifactId, size } = await artifact.uploadArtifact(
