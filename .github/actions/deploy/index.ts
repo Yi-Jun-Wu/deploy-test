@@ -19,4 +19,8 @@ const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deploym
 
 console.log(inspect(response, { colors: true, depth: Infinity }));
 
-// build command: npx esbuild .\.github\actions\deploy\index.ts --bundle --format=esm --platform=node --outfile=.\.github\actions\deploy\dist\index.js --minify --tree-shaking=true
+/* build command: 
+
+npx esbuild .\.github\actions\deploy\index.ts --bundle --format=esm --platform=node --outfile=.\.github\actions\deploy\dist\index.js --minify --tree-shaking=true
+
+*/
