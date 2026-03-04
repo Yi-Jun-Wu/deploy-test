@@ -17,3 +17,7 @@ inputs:
     description: 'Duration after which artifact will be deleted in seconds.'
     required: true
     default: 0.5
+
+outputs:
+  page_url:
+    description: 'URL to deployed GitHub Pages'

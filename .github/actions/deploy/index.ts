@@ -1,4 +1,4 @@
-import { getInput, getIDToken } from '@actions/core';
+import { getInput, setOutput, getIDToken } from '@actions/core';
 import { getOctokit, context } from "@actions/github";
 import { DefaultArtifactClient } from '@actions/artifact'
 import { execSync } from 'node:child_process';
@@ -66,27 +66,23 @@ const { id: artifactId } = await artifact.uploadArtifact(
 // console.log(`Created artifact with id: ${artifactId} (bytes: ${size})`);
 const startTime = performance.now();
 
-const deployPage = async () => {
-  const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    artifact_id: artifactId,
-    pages_build_version: buildVersion,
-    oidc_token: idToken,
-  });
-  console.log("Page deployed to:", response.data?.page_url ?? response);
-};
+const response = await octokit.request('POST /repos/{owner}/{repo}/pages/deployments', {
+  owner: context.repo.owner,
+  repo: context.repo.repo,
+  artifact_id: artifactId,
+  pages_build_version: buildVersion,
+  oidc_token: idToken,
+});
+console.log("Page deployed to:", response.data?.page_url ?? response);
 
-const deleteArtifact = async () => {
   // sleep 100 ms
-  await new Promise((resolve) => setTimeout(() => resolve(0), 500));
-  const { id } = await artifact.deleteArtifact(artifactName);
-  const finishTime = performance.now();
-  console.log("Deleted Artifact ID:", id);
-  console.log("Artifact Existing Time:", finishTime - startTime, "ms");
-};
+await new Promise((resolve) => setTimeout(() => resolve(0), expireTime * 1000));
+const { id } = await artifact.deleteArtifact(artifactName);
+const finishTime = performance.now();
+console.log("Deleted Artifact ID:", id);
+console.log("Artifact Existing Time:", finishTime - startTime, "ms");
 
-await Promise.all([deployPage(), deleteArtifact()]);
+setOutput('page_url', response.data?.page_url)
 
 /* build command: 
 
