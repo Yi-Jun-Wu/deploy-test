@@ -21,6 +21,6 @@ console.log(inspect(response, { colors: true, depth: Infinity }));
 
 /* build command: 
 
-npx esbuild .\.github\actions\deploy\index.ts --bundle --format=esm --platform=node --outfile=.\.github\actions\deploy\dist\index.js --minify --tree-shaking=true
+npx esbuild .\.github\actions\deploy\index.ts --bundle --format=esm --platform=node --banner:js="import { createRequire } from 'module'; const require = createRequire(import.meta.url);" --outfile=.\.github\actions\deploy\dist\index.js --minify --tree-shaking=true
 
 */
